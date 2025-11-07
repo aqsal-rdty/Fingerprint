@@ -20,9 +20,9 @@
                             <h5 class="mb-0"><i class="bi bi-check2-circle me-2"></i>Guru yang Sudah Hadir</h5>
                         </div>
                     </div>
-                    <div class="card-body p-0">
+                    <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
                         <table id="tabel-hadir" class="table table-bordered table-hover mb-0">
-                            <thead class="table-primary text-center">
+                            <thead class="table-primary text-center sticky-top">
                                 <tr>
                                     <th style="width: 50px;">No</th>
                                     <th>Nama Guru</th>
@@ -57,9 +57,9 @@
                             <h5 class="mb-0"><i class="bi bi-x-circle me-2"></i>Guru yang Belum Hadir</h5>
                         </div>
                     </div>
-                    <div class="card-body p-0">
+                    <div class="card-body p-0" style="max-height: 400px; overflow-y: auto;">
                         <table id="tabel-belum" class="table table-bordered table-hover mb-0">
-                            <thead class="table-primary text-center">
+                            <thead class="table-primary text-center sticky-top">
                                 <tr>
                                     <th style="width: 50px;">No</th>
                                     <th>Nama Guru</th>

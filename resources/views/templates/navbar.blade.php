@@ -84,30 +84,30 @@
                             <i class="bi bi-house-door me-2 fs-5"></i> Dashboard
                         </a>
                     </li>
-                    <li class="nav-item mb-2">
+                    {{-- <li class="nav-item mb-2">
                         <a class="nav-link d-flex align-items-center {{ request()->routeIs('laporan.*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="{{ route('laporan.index') }}">
                             <i class="bi bi-briefcase me-2 fs-5"></i> Laporan
                         </a>
-                    </li>
-                    <li class="nav-item mb-2">
+                    </li> --}}
+                    {{-- <li class="nav-item mb-2">
                         <a class="nav-link d-flex align-items-center {{ request()->routeIs('master.*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="{{ route('master.index') }}">
                             <i class="bi bi-pencil-square me-2 fs-5"></i> Master
                         </a>
-                    </li>
+                    </li> --}}
                     <li class="nav-item mb-2">
                         <a class="nav-link d-flex align-items-center {{ request()->routeIs('guru.*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="{{ route('guru.index') }}">
                             <i class="bi bi-person-badge me-2 fs-5"></i> Guru
                         </a>
                     </li>
-                    <li class="nav-item mb-2">
+                    {{-- <li class="nav-item mb-2">
                         <a class="nav-link d-flex align-items-center {{ request()->routeIs('fingerprint.*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="{{ route('fingerprint_index') }}">
                             <i class="bi bi-folder2-open me-2 fs-5"></i> Mesin Absen
                         </a>
-                    </li>
+                    </li> --}}
                     <!-- Tambahan Fingerprint Guru -->
                     <li class="nav-item mb-2">
                         <a class="nav-link d-flex align-items-center {{ request()->routeIs('fingerprintguru.*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="{{ route('fingerprintguru_index') }}">
-                            <i class="bi bi-fingerprint me-2 fs-5"></i> Fingerprint Guru
+                            <i class="bi bi-folder2-open me-2 fs-5"></i> Mesin Absen Guru
                         </a>
                     </li>
                 </ul>
