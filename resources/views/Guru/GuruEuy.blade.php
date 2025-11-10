@@ -1,6 +1,12 @@
 <script src="{{ url('asset/js/plugins/jquery.datatables.min.js') }}"></script>
 <script src="{{ url('asset/js/plugins/datatables.bootstrap.min.js') }}"></script>
 
+<div class="mt-3 ms-3 mb-4">
+    <button onclick="history.back()" class="btn btn-primary">
+        <i class="bi bi-arrow-left me-1"></i> Kembali
+    </button>
+</div>
+
 <div id="scrollDiv" style="width: 100%; height: 340px; overflow: auto;">
     <table class="table table-striped table-bordered">
         <thead>

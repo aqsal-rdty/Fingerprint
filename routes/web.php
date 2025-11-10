@@ -4,13 +4,13 @@ use Illuminate\Support\Facades\Route;
 use App\Models\Guru;
 use App\Http\Controllers\MasterController;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\RayonController;
-use App\Http\Controllers\JurusanController;
-use App\Http\Controllers\RombelController;
+// use App\Http\Controllers\RayonController;
+// use App\Http\Controllers\JurusanController;
+// use App\Http\Controllers\RombelController;
 use App\Http\Controllers\GuruController;
-use App\Http\Controllers\FPController;
+// use App\Http\Controllers\FPController;
 use App\Http\Controllers\FPGController;
-use App\Http\Controllers\SiswaController;
+// use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\UserDataController;
 use Illuminate\Support\Facades\Auth;
@@ -26,6 +26,7 @@ Route::post('/logout', function () {
     return redirect()->route('login');
 })->name('logout');
 
+Route::get('/guru/sinkronisasi', [UserDataController::class, 'sinkronguru'])->name('kehadiran.sinkron');
 Route::get('/guru/sinkronguru', [UserDataController::class, 'sinkronguru'])->name('guruSinkronisasi');
 Route::get('/guru/sinkron', [UserDataController::class, 'sinkronguru'])->name('guruSinkronisasi');
 Route::get('/sinkronguru', [UserDataController::class, 'sinkronguru'])->name('sinkron_guru');
