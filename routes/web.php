@@ -13,7 +13,6 @@ use App\Http\Controllers\FPGController;
 // use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\UserDataController;
-use App\Http\Controllers\KeteranganGuruController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
@@ -103,10 +102,6 @@ Route::middleware(['admin'])->group(function () {
         Route::get('/edit/{nip}', [GuruController::class, 'edit'])->name('guru.edit');
         Route::put('/update/{nip}', [GuruController::class, 'update'])->name('guru.update');
         Route::get('/rekap-semua', [GuruController::class, 'rekapSemua'])->name('guru.detail_rekapsemua');
-    });
-
-    Route::prefix('keteranganguru')->group(function () {
-        Route::get('/keteranganguru', [KeteranganGuruController::class, 'index'])->name('keteranganguru.index');
     });
 
     // Route::prefix('jurusan')->group(function () {

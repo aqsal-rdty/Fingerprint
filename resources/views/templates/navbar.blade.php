@@ -110,11 +110,11 @@
                             <i class="bi bi-folder2-open me-2 fs-5"></i> Mesin Absen Guru
                         </a>
                     </li>
-                    <li class="nav-item mb-2">
+                    {{-- <li class="nav-item mb-2">
                         <a class="nav-link d-flex align-items-center {{ request()->routeIs('keteranganguru.*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="{{ route('keteranganguru.index') }}">
                             <i class="bi bi-card-text me-2 fs-5"></i> Keterangan Guru
                         </a>
-                    </li>
+                    </li> --}}
                 </ul>
             </ul>
         </div>
