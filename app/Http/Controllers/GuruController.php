@@ -134,4 +134,11 @@ class GuruController extends Controller
         return Excel::download(new RekapGuruExport($nip_pegawai, $from, $to), 'Rekap_Absensi_Guru_'.$nip_pegawai.'.xlsx');
     }
 
+    public function keterangan()
+    {
+        $keteranganGuru = [];
+        
+        return view('Keterangan.keteranganguru', compact('keteranganGuru'));
+    }
+
 }

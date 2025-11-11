@@ -73,7 +73,10 @@ Route::middleware(['admin'])->group(function () {
         Route::put('/update/{nip}', [GuruController::class, 'update'])->name('guru.update');
         Route::get('/rekap-semua', [GuruController::class, 'rekapSemua'])->name('guru.detail_rekapsemua');
     });
-    
+
+    Route::prefix('guru')->middleware(['web', 'admin'])->group(function () {
+        Route::get('/keterangan', [GuruController::class, 'keterangan'])->name('keteranganguru.index');
+    });
     // Route::prefix('laporan')->group(function () {
     //     Route::get('/', [LaporanController::class, 'laporan_kehadiran'])->name('laporan.index');
     //     Route::post('/harian', [LaporanController::class, 'laporan_harian_tampil'])->name('laporan_harian');

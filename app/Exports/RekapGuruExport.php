@@ -32,6 +32,25 @@ class RekapGuruExport implements FromView
 
         $data = $query->orderBy('kehadiranguru.tanggal', 'asc')->get();
 
+        $data->transform(function($row) {
+            $awalMasuk = strtotime('07:01:00');
+            $akhirMasuk = strtotime('16:00:00');
+            $waktu = strtotime($row->waktu);
+
+            if ($waktu > $awalMasuk && $waktu < $akhirMasuk) {
+                $row->keterangan = 'Telat';
+                if (!empty($row->status)) {
+                    $row->keterangan .= ' ('.$row->status.')';
+                }
+            } elseif ($waktu <= $awalMasuk) {
+                $row->keterangan = 'Tepat';
+            } else {
+                $row->keterangan = 'Pulang';
+            }
+
+            return $row;
+        });
+
         return view('Guru.export_excel', [
             'data' => $data
         ]);
