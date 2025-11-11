@@ -105,7 +105,7 @@ Route::middleware(['admin'])->group(function () {
         Route::get('/rekap-semua', [GuruController::class, 'rekapSemua'])->name('guru.detail_rekapsemua');
     });
 
-    Route::prefix('fingerprintguru')->group(function () {
+    Route::prefix('keteranganguru')->group(function () {
         Route::get('/keteranganguru', [KeteranganGuruController::class, 'index'])->name('keteranganguru.index');
     });
 
