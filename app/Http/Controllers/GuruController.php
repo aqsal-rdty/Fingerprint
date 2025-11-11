@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Guru;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Exports\RekapGuruExport;
 
 class GuruController extends Controller
 {
@@ -86,6 +88,50 @@ class GuruController extends Controller
         }
 
         return view('Guru.detail_rekapsemua', compact('qw_hadir', 'from', 'to'));
+    }
+
+    public function rekapAbsensi()
+    {
+        $guru = Guru::orderBy('nama', 'asc')->get();
+
+        return view('Guru.rekapabsen', compact('guru'));
+    }
+
+    public function LihatRekap($nip, Request $request)
+    {
+        $from = $request->get('from');
+        $to = $request->get('to');
+
+        $query = DB::table('kehadiranguru')
+            ->join('guru', 'kehadiranguru.nip', '=', 'guru.nip')
+            ->leftJoin('keterlambatan', function ($join) {
+                $join->on('kehadiranguru.tanggal', '=', 'keterlambatan.tanggal')
+                    ->on('kehadiranguru.nip', '=', 'keterlambatan.nip');
+            })
+            ->select('kehadiranguru.*', 'guru.nama', 'keterlambatan.keterangan')
+            ->where('kehadiranguru.nip', $nip)
+            ->orderBy('kehadiranguru.tanggal', 'desc');
+
+        if ($from && $to) {
+            $query->whereBetween('kehadiranguru.tanggal', [$from, $to]);
+        }
+
+        $qw_hadir = $query->get();
+
+        return view('Guru.lihat_rekap', [
+            'qw_hadir' => $qw_hadir,
+            'nip_pegawai' => $nip,
+            'from' => $from ?? '',
+            'to' => $to ?? ''
+        ]);
+    }
+
+    public function exportExcel($nip_pegawai, Request $request)
+    {
+        $from = $request->get('from');
+        $to = $request->get('to');
+
+        return Excel::download(new RekapGuruExport($nip_pegawai, $from, $to), 'Rekap_Absensi_Guru_'.$nip_pegawai.'.xlsx');
     }
 
 }

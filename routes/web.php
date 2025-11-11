@@ -13,6 +13,7 @@ use App\Http\Controllers\FPGController;
 // use App\Http\Controllers\SiswaController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\UserDataController;
+use App\Http\Controllers\KeteranganGuruController;
 use Illuminate\Support\Facades\Auth;
 
 Route::get('/', function () {
@@ -25,6 +26,9 @@ Route::post('/logout', function () {
     Auth::logout();
     return redirect()->route('login');
 })->name('logout');
+
+Route::get('/excel/{nip_pegawai}', [GuruController::class, 'exportExcel'])->name('rekapkehadiran.export');
+Route::get('/rekapkehadiran/{nip}', [GuruController::class, 'LihatRekap'])->name('rekapkehadiran.lihat');
 
 Route::get('/guru/sinkronisasi', [UserDataController::class, 'sinkronguru'])->name('kehadiran.sinkron');
 Route::get('/guru/sinkronguru', [UserDataController::class, 'sinkronguru'])->name('guruSinkronisasi');
@@ -44,6 +48,10 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/guru/sinkron', [UserDataController::class, 'sinkronguru'])->name('guruSinkronisasi');
     Route::get('/sinkronguru', [UserDataController::class, 'sinkronguru'])->name('sinkron_guru');
     Route::get('/guru/rekap-bulan', [UserDataController::class, 'rekapBulan'])->name('guru.rekapbulanan');
+
+    Route::prefix('guru')->middleware(['admin'])->group(function () {
+        Route::get('/rekap-absensi', [GuruController::class, 'rekapAbsensi'])->name('guru.rekapabsensi');
+    });
 
     Route::prefix('laporan')->group(function () {
         Route::get('/', [LaporanController::class, 'laporan_kehadiran'])->name('laporan.index');
@@ -95,6 +103,10 @@ Route::middleware(['admin'])->group(function () {
         Route::get('/edit/{nip}', [GuruController::class, 'edit'])->name('guru.edit');
         Route::put('/update/{nip}', [GuruController::class, 'update'])->name('guru.update');
         Route::get('/rekap-semua', [GuruController::class, 'rekapSemua'])->name('guru.detail_rekapsemua');
+    });
+
+    Route::prefix('fingerprintguru')->group(function () {
+        Route::get('/keteranganguru', [KeteranganGuruController::class, 'index'])->name('keteranganguru.index');
     });
 
     // Route::prefix('jurusan')->group(function () {

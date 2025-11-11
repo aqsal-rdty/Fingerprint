@@ -1,4 +1,3 @@
-<!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -40,7 +39,6 @@
     }
 </style>
 
-{{-- Navbar --}}
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm" style="background-color: #3B82F6;">
     <div class="container-fluid">
         <button class="btn btn-outline-light me-3" id="toggleSidebar">
@@ -61,7 +59,6 @@
     </div>
 </nav>
 
-{{-- Sidebar --}}
 <div class="d-flex">
     <nav id="sidebar" class="bg-light border-end position-fixed shadow-sm text-start">
         <div class="w-100" style="
@@ -97,7 +94,7 @@
                 </li>
 
                 <li class="nav-item mb-2">
-                    <a class="nav-link d-flex align-items-center {{ request()->routeIs('guru.rekapabsensi') ? 'active text-primary fw-bold' : 'text-dark' }}" href="#">
+                    <a class="nav-link {{ request()->routeIs('guru.rekapabsensi') ? 'active text-primary fw-bold' : 'text-dark' }}" href="{{ route('guru.rekapabsensi') }}">
                         <i class="bi bi-clock-history me-2 fs-5"></i> Rekap Absensi
                     </a>
                 </li>

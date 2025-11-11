@@ -106,7 +106,6 @@ class UserDataController extends Controller
         ]);
     }
 
-
     public function DetailRekapSemua(Request $request)
     {
       $dari = date('Y-m-d', strtotime($request->dari));
@@ -116,6 +115,19 @@ class UserDataController extends Controller
 
       $qw_kehadiran = DB::table('qw_kehadiranguru')->where('tanggal', '>=', $dari)->where('tanggal', '<=', $sampai)->get()->all();
       return view('guru.detail_rekapsemua', ['qw_hadir' => $qw_kehadiran, 'from' => $dari, 'to' => $sampai]);
+    }
+
+    public function ListRKG(Request $request, $nip)
+    {
+      $nip_pegawai = $nip;
+      $dari = date('Y-m-d', strtotime($request->dari));
+      $sampai = date('Y-m-d', strtotime($request->sampai));
+      $request->session()->put('tanggal1',$dari);
+      $request->session()->put('tanggal2',$sampai);
+
+      $qw_kehadiran = DB::table('qw_kehadiranguru')->where('nip', $nip)->where('tanggal', '>=', $dari)->where('tanggal', '<=', $sampai)->get();
+
+      return view('guru.detail_rekap', ['qw_hadir' => $qw_kehadiran, 'from' => $dari, 'to' => $sampai, 'nip_pegawai' => $nip_pegawai]);
     }
 
     public function RekapKehadiranGuru()
@@ -187,19 +199,6 @@ class UserDataController extends Controller
         }
 
         return view('guru.rekapbulan', compact('rekap', 'bulan', 'tahun'));
-    }
-
-    public function ListRKG(Request $request, $nip)
-    {
-      $nip_pegawai = $nip;
-      $dari = date('Y-m-d', strtotime($request->dari));
-      $sampai = date('Y-m-d', strtotime($request->sampai));
-      $request->session()->put('tanggal1',$dari);
-      $request->session()->put('tanggal2',$sampai);
-
-      $qw_kehadiran = DB::table('qw_kehadiranguru')->where('nip', $nip)->where('tanggal', '>=', $dari)->where('tanggal', '<=', $sampai)->get();
-
-      return view('guru.detail_rekap', ['qw_hadir' => $qw_kehadiran, 'from' => $dari, 'to' => $sampai, 'nip_pegawai' => $nip_pegawai]);
     }
 
     public function RekapSemua()

@@ -42,7 +42,7 @@
                 </li>
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle text-white" href="#" role="button" data-bs-toggle="dropdown">
-                        <img src="{{ asset('img/aqsal.jpg') }}" class="rounded-circle me-1" width="30" height="30" alt="User">
+                        <img src="{{ asset('img/wikrama.png') }}" class="rounded-circle me-1" width="30" height="30" alt="User">
                     </a>
                     <ul class="dropdown-menu dropdown-menu-end">
                         <li><a class="dropdown-item" href="#"><i class="bi bi-person"></i> Profil Saya</a></li>
@@ -108,6 +108,11 @@
                     <li class="nav-item mb-2">
                         <a class="nav-link d-flex align-items-center {{ request()->routeIs('fingerprintguru.*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="{{ route('fingerprintguru_index') }}">
                             <i class="bi bi-folder2-open me-2 fs-5"></i> Mesin Absen Guru
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link d-flex align-items-center {{ request()->routeIs('keteranganguru.*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="{{ route('keteranganguru.index') }}">
+                            <i class="bi bi-card-text me-2 fs-5"></i> Keterangan Guru
                         </a>
                     </li>
                 </ul>
