@@ -18,8 +18,9 @@
 
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-3">
-                <button onclick="history.back()" class="btn btn-primary">
-                    <i class="bi bi-arrow-left me-1"></i> Kembali
+                <button onclick="history.back()" class="btn btn-primary d-flex align-items-center px-3 py-1 shadow-sm" style="border-radius: 8px; font-size: 0.9rem; transition: transform 0.2s;">
+                    <i class="bi bi-arrow-left-short me-2" style="font-size: 1.1rem;"></i>
+                    <span>Kembali</span>
                 </button>
                 <form action="{{ url('excel/'.$nip_pegawai) }}" method="get">
                     <input type="hidden" name="from" value="{{ $from }}">
