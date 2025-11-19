@@ -6,9 +6,9 @@ use App\Http\Controllers\MasterController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\FPGController;
-use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\UserDataController;
 use Illuminate\Support\Facades\Auth;
+// use App\Http\Controllers\LaporanController;
 // use App\Http\Controllers\RayonController;
 // use App\Http\Controllers\JurusanController;
 // use App\Http\Controllers\RombelController;
@@ -26,11 +26,6 @@ Route::post('/logout', function () {
     return redirect()->route('login');
 })->name('logout');
 
-Route::get('/guru/sinkronisasi', [UserDataController::class, 'sinkronguru'])->name('kehadiran.sinkron');
-Route::get('/guru/sinkronguru', [UserDataController::class, 'sinkronguru'])->name('guruSinkronisasi');
-Route::get('/guru/sinkron', [UserDataController::class, 'sinkronguru'])->name('guruSinkronisasi');
-Route::get('/sinkronguru', [UserDataController::class, 'sinkronguru'])->name('sinkron_guru');
-
 Route::get('/excel/{nip_pegawai}', [GuruController::class, 'exportExcel'])->name('rekapkehadiran.export');
 Route::get('/rekapkehadiran/{nip}', [GuruController::class, 'LihatRekap'])->name('rekapkehadiran.lihat');
 
@@ -42,8 +37,8 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/guru/dashboard', [GuruController::class, 'dashboard'])->name('guru.dashboard');
 
     Route::get('/guru/kehadiran', [UserDataController::class, 'indexguru'])->name('guru.kehadiran');
-    Route::get('/kehadiran/refresh', [UserDataController::class, 'refreshKehadiran'])->name('kehadiran.refresh');
-    Route::get('/guru/sinkron', [UserDataController::class, 'sinkronguru'])->name('guruSinkronisasi');
+    Route::get('/kehadiran/refresh', [UserDataController::class, 'refreshKehadiran'])->name('kehadiran.refresh');  
+    Route::get('/guru/sinkronisasi', [UserDataController::class, 'sinkronguru'])->name('kehadiran.sinkron'); 
     Route::get('/sinkronguru', [UserDataController::class, 'sinkronguru'])->name('sinkron_guru');
     Route::get('/guru/rekap-bulan', [UserDataController::class, 'rekapBulan'])->name('guru.rekapbulanan');
 
@@ -76,7 +71,9 @@ Route::middleware(['admin'])->group(function () {
 
     Route::prefix('guru')->middleware(['web', 'admin'])->group(function () {
         Route::get('/keterangan', [GuruController::class, 'keterangan'])->name('keteranganguru.index');
+        Route::put('/guru/keterangan/update/{nip}', [GuruController::class, 'updateKeterangan'])->name('keteranganguru.update');
     });
+
     // Route::prefix('laporan')->group(function () {
     //     Route::get('/', [LaporanController::class, 'laporan_kehadiran'])->name('laporan.index');
     //     Route::post('/harian', [LaporanController::class, 'laporan_harian_tampil'])->name('laporan_harian');

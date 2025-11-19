@@ -13,6 +13,7 @@ return new class extends Migration
             $table->integer('nip')->nullable();
             $table->date('tanggal')->nullable();
             $table->time('waktu')->nullable();
+            $table->time('pulang')->nullable();
             $table->integer('status')->nullable();
             $table->timestamps();
         });

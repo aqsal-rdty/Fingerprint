@@ -10,11 +10,11 @@
     </p>
     <h5 id="timeDisplay" class="fw-bold text-primary mt-2 ms-3"></h5>
 
-    <div class="mt-3 ms-3 mb-4">
+    {{-- <div class="mt-3 ms-3 mb-4">
         <a href="{{ route('kehadiran.sinkron') }}" class="btn btn-primary">
             <i class="bi bi-arrow-repeat me-1"></i> Sinkronisasi Absensi
         </a>
-    </div>
+    </div> --}}
 
     <div class="row">
         <div class="col-md-6 mb-4">
@@ -31,6 +31,7 @@
                                 <th style="width: 50px;">No</th>
                                 <th>Nama Guru</th>
                                 <th style="width: 130px;">Waktu Datang</th>
+                                <th style="width: 130px;">Pulang</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -40,10 +41,11 @@
                                     <td class="text-center">{{ $no++ }}</td>
                                     <td>{{ $a->nama }}</td>
                                     <td class="text-center">{{ $a->waktu }}</td>
+                                    <td class="text-center">{{ $a->pulang ?? '-'}}</td>
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="3" class="text-center text-muted">
+                                    <td colspan="4" class="text-center text-muted">
                                         <i class="bi bi-exclamation-circle me-1"></i> Belum ada guru yang hadir
                                     </td>
                                 </tr>
@@ -125,6 +127,7 @@
                             <td class="text-center">${i + 1}</td>
                             <td>${absen.nama}</td>
                             <td class="text-center">${absen.waktu}</td>
+                            <td class="text-center">${absen.pulang ?? '-'}</td>
                         </tr>`;
                 });
             }

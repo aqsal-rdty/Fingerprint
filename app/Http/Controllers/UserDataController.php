@@ -48,8 +48,17 @@ class UserDataController extends Controller
                                     'nip' => $nip,
                                     'tanggal' => $tanggal,
                                     'waktu' => $waktu,
-                                    'status' => 1
+                                    'status' => 1,
+                                    // 'pulang' => null
                                 ];
+                            }
+
+                            else {
+                                if ($waktu >= "16:00:00" && $exists->pulang == null) {
+                                    GR::where('id', $exists->id)->update([
+                                        'pulang' => $waktu
+                                    ]);
+                                }
                             }
                         }
                     }
@@ -73,11 +82,14 @@ class UserDataController extends Controller
             ->orderBy('waktu', 'asc')
             ->get();
 
-        return view('guru.GuruEuy', ['data' => $absensi]);
+        // return view('guru.GuruEuy', ['data' => $absensi]);
+        return true;
     }
 
     public function indexguru()
     {
+        $this->sinkronguru();
+        
         $absensi = Guru::join('kehadiranguru', 'kehadiranguru.nip', '=', 'guru.nip')
             ->where('kehadiranguru.tanggal', date('Y-m-d'))
             ->orderBy('guru.nama', 'asc')
@@ -96,6 +108,7 @@ class UserDataController extends Controller
     {
         $guru = Guru::orderBy('nama', 'asc')->get();
         $kehadiran = Guru::join('kehadiranguru', 'kehadiranguru.nip', '=', 'guru.nip')
+            ->select('guru.nama', 'kehadiranguru.waktu', 'kehadiranguru.pulang', 'guru.nip')
             ->where('kehadiranguru.tanggal', date('Y-m-d'))
             ->orderBy('nama', 'asc')
             ->get();

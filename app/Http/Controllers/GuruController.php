@@ -133,12 +133,43 @@ class GuruController extends Controller
 
         return Excel::download(new RekapGuruExport($nip_pegawai, $from, $to), 'Rekap_Absensi_Guru_'.$nip_pegawai.'.xlsx');
     }
-
     public function keterangan()
     {
-        $keteranganGuru = [];
-        
-        return view('Keterangan.keteranganguru', compact('keteranganGuru'));
-    }
+        $tanggalHariIni = date('Y-m-d');
 
+        $hadir = DB::table('kehadiranguru')
+            ->where('tanggal', $tanggalHariIni)
+            ->pluck('nip')
+            ->toArray();
+
+        $tidakhadir = DB::table('guru')
+            ->whereNotIn('guru.nip', $hadir)
+            ->leftJoin('keterangan_guru', function($join) use ($tanggalHariIni) {
+                $join->on('guru.nip', '=', 'keterangan_guru.nip')
+                    ->where('keterangan_guru.tanggal', '=', $tanggalHariIni);
+                })
+            ->select('guru.nip', 'guru.nama', 'keterangan_guru.keterangan')
+            ->get();
+
+        return view('keterangan.keteranganguru', compact('tidakhadir'));
+    }
+    public function updateketerangan(Request $request, $nip)
+    {
+        $request->validate([
+            'keterangan' => 'required|in:Sakit,Izin,'
+        ]);
+
+        DB::table('keterangan_guru')->updateOrInsert(
+            [
+                'nip' => $nip,
+                'tanggal' => date('Y-m-d')
+            ],
+            [
+                'keterangan' => $request->keterangan,
+                'updated_at' => now(),
+            ]
+        );
+
+        return back()->with('success', 'Keterangan berhasil diperbarui.');
+    }
 }
