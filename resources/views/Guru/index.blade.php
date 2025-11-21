@@ -10,12 +10,6 @@
     </p>
     <h5 id="timeDisplay" class="fw-bold text-primary mt-2 ms-3"></h5>
 
-    {{-- <div class="mt-3 ms-3 mb-4">
-        <a href="{{ route('kehadiran.sinkron') }}" class="btn btn-primary">
-            <i class="bi bi-arrow-repeat me-1"></i> Sinkronisasi Absensi
-        </a>
-    </div> --}}
-
     <div class="row">
         <div class="col-md-6 mb-4">
             <div class="card border-0 shadow-sm">
@@ -78,7 +72,7 @@
                                 <tr>
                                     <td class="text-center">{{ $no++ }}</td>
                                     <td>{{ $t->nama }}</td>
-                                    <td class="text-center">-</td>
+                                    <td>{{ $t->keterangan ?? '-' }}</td>
                                 </tr>
                             @empty
                                 <tr>

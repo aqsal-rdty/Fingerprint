@@ -10,6 +10,7 @@ use PhpParser\Node\Expr\FuncCall;
 class Guru extends Model
 {
     use HasFactory;
+    public $timestamps = false;
     protected $table = 'guru';
     protected $primaryKey = 'nip';
     public $incrementing = false;

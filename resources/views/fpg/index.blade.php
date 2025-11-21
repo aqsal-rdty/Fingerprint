@@ -60,24 +60,30 @@
                             </td>
                             <td class="text-center">
                                 @if ($value->status == 1)
-                                    <a href="{{ route('fingerprintguru_deactive', ['id' => $value->id]) }}" class="btn btn-warning btn-sm" title="Non Aktifkan">
+                                    <a href="{{ route('fingerprintguru_deactive', ['id' => $value->id]) }}" 
+                                    class="btn btn-outline-warning btn-sm" title="Non Aktifkan">
                                         <i class="bi bi-x-circle"></i>
                                     </a>
                                 @else
-                                    <a href="{{ route('fingerprintguru_active', ['id' => $value->id]) }}" class="btn btn-success btn-sm" title="Aktifkan">
+                                    <a href="{{ route('fingerprintguru_active', ['id' => $value->id]) }}" 
+                                    class="btn btn-outline-success btn-sm" title="Aktifkan">
                                         <i class="bi bi-check-circle"></i>
                                     </a>
                                 @endif
 
-                                <a href="{{ route('fingerprintguru_check', ['id' => $value->id]) }}" class="btn btn-info btn-sm" title="Cek Koneksi">
+                                <a href="{{ route('fingerprintguru_check', ['id' => $value->id]) }}" 
+                                class="btn btn-outline-info btn-sm" title="Cek Koneksi">
                                     <i class="bi bi-wifi"></i>
                                 </a>
 
-                                <a href="{{ route('fingerprintguru_edit', ['id' => $value->id]) }}" class="btn btn-primary btn-sm" title="Edit">
+                                <a href="{{ route('fingerprintguru_edit', ['id' => $value->id]) }}" 
+                                class="btn btn-outline-primary btn-sm" title="Edit">
                                     <i class="bi bi-pencil"></i>
                                 </a>
 
-                                <a href="{{ route('fingerprintguru_delete', ['id' => $value->id]) }}" class="btn btn-danger btn-sm" title="Hapus" onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                <a href="{{ route('fingerprintguru_delete', ['id' => $value->id]) }}" 
+                                class="btn btn-outline-danger btn-sm" title="Hapus"
+                                onclick="return confirm('Yakin ingin menghapus data ini?')">
                                     <i class="bi bi-trash"></i>
                                 </a>
                             </td>

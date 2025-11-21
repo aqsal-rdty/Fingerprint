@@ -65,12 +65,14 @@ Route::middleware(['admin'])->group(function () {
         Route::get('/create', [GuruController::class, 'create'])->name('guru.create');
         Route::post('/store', [GuruController::class, 'store'])->name('guru.store');
         Route::get('/edit/{nip}', [GuruController::class, 'edit'])->name('guru.edit');
+        Route::delete('/delete/{nip}', [GuruController::class, 'destroy'])->name('guru.destroy');
         Route::put('/update/{nip}', [GuruController::class, 'update'])->name('guru.update');
         Route::get('/rekap-semua', [GuruController::class, 'rekapSemua'])->name('guru.detail_rekapsemua');
     });
 
     Route::prefix('guru')->middleware(['web', 'admin'])->group(function () {
         Route::get('/keterangan', [GuruController::class, 'keterangan'])->name('keteranganguru.index');
+        Route::get('/keterangan/semua', [GuruController::class, 'semuaKeterangan'])->name('keteranganguru.semua');
         Route::put('/guru/keterangan/update/{nip}', [GuruController::class, 'updateKeterangan'])->name('keteranganguru.update');
     });
 

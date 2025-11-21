@@ -57,6 +57,14 @@ class GuruController extends Controller
         return redirect()->route('guru.index')->with('success', 'Data guru berhasil diperbarui.');
     }
 
+    public function destroy($nip)
+    {
+        $guru = Guru::findOrFail($nip);
+        $guru->delete();
+
+        return redirect()->route('guru.index')->with('success', 'Data guru berhasil dihapus.');
+    }
+
     public function dashboard()
     {
         $guru = Guru::all();
@@ -156,8 +164,15 @@ class GuruController extends Controller
     public function updateketerangan(Request $request, $nip)
     {
         $request->validate([
-            'keterangan' => 'required|in:Sakit,Izin,'
+            'keterangan' => 'required|string',
+            'cuti_detail' => 'nullable|string|max:255'
         ]);
+
+        $ket = $request->keterangan;
+
+        if ($ket === 'Cuti') {
+            $ket = 'Cuti - ' . $request->cuti_detail;
+        }
 
         DB::table('keterangan_guru')->updateOrInsert(
             [
@@ -165,11 +180,23 @@ class GuruController extends Controller
                 'tanggal' => date('Y-m-d')
             ],
             [
-                'keterangan' => $request->keterangan,
+                'keterangan' => $ket,
                 'updated_at' => now(),
             ]
         );
 
         return back()->with('success', 'Keterangan berhasil diperbarui.');
+    }
+
+    public function semuaKeterangan()
+    {
+        $data = DB::table('keterangan_guru')
+            ->join('guru', 'guru.nip', '=', 'keterangan_guru.nip')
+            ->select('guru.nip', 'guru.nama', 'keterangan_guru.keterangan', 'keterangan_guru.tanggal')
+            ->orderBy('keterangan_guru.tanggal', 'desc')
+            ->orderBy('guru.nama', 'asc')
+            ->get();
+
+        return view('keterangan.semua_keterangan', compact('data'));
     }
 }

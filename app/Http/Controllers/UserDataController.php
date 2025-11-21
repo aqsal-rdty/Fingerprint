@@ -89,17 +89,26 @@ class UserDataController extends Controller
     public function indexguru()
     {
         $this->sinkronguru();
-        
+
+        $tanggal = date('Y-m-d');
+
         $absensi = Guru::join('kehadiranguru', 'kehadiranguru.nip', '=', 'guru.nip')
-            ->where('kehadiranguru.tanggal', date('Y-m-d'))
+            ->where('kehadiranguru.tanggal', $tanggal)
             ->orderBy('guru.nama', 'asc')
             ->get();
 
-        $tidakhadir = Guru::whereNotIn('nip', function ($query) {
-            $query->select('nip')
-                ->from('kehadiranguru')
-                ->where('tanggal', date('Y-m-d'));
-        })->orderBy('nama', 'asc')->get();
+        $tidakhadir = Guru::whereNotIn('guru.nip', function ($q) use ($tanggal) {
+                $q->select('nip')
+                    ->from('kehadiranguru')
+                    ->where('tanggal', $tanggal);
+            })
+            ->leftJoin('keterangan_guru', function ($join) use ($tanggal) {
+                $join->on('guru.nip', '=', 'keterangan_guru.nip')
+                    ->where('keterangan_guru.tanggal', '=', $tanggal);
+            })
+            ->select('guru.nip', 'guru.nama', 'keterangan_guru.keterangan')
+            ->orderBy('guru.nama', 'asc')
+            ->get();
 
         return view('guru.index', compact('absensi', 'tidakhadir'));
     }

@@ -2,13 +2,6 @@
 
 @section('content')
 <div class="container mt-4">
-    @if (session('success'))
-        <div class="alert alert-success alert-dismissible fade show text-center" role="alert">
-            <i class="bi bi-check-circle-fill me-2"></i>
-             {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-    @endif
         <h3 class="mb-3" style="color: #6c757d;">
             <i class="bi bi-person-badge"></i> Data Guru
         </h3>
@@ -44,10 +37,20 @@
                             <td>{{ $g->nama }}</td>
                             <td>{{ $g->statuss }}</td>
                             <td class="text-center">
-                                <a href="{{ route('guru.edit', ['nip' => $g->nip]) }}" class="btn btn-warning btn-sm" title="Edit Guru">
+                                <a href="{{ route('guru.edit', ['nip' => $g->nip]) }}" 
+                                    class="btn btn-outline-primary btn-sm" 
+                                    title="Edit Guru">
                                     <i class="bi bi-pencil"></i>
                                 </a>
-                                <a href="#" class="btn btn-danger btn-sm"><i class="bi bi-trash"></i></a>
+
+                                <form action="{{ route('guru.destroy', $g->nip) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="btn btn-outline-danger btn-sm" 
+                                        onclick="return confirm('Yakin ingin menghapus data ini?')">
+                                        <i class="bi bi-trash"></i>
+                                    </button>
+                                </form>
                             </td>
                         </tr>
                     @empty
@@ -62,41 +65,19 @@
 </div>
 @endsection
 
-<style>
-    .btn-circle {
-        width: 42px;
-        height: 40px;
-        border-radius: 10%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 100px;
-        color: #fff;
-        box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
-        transition: all 0.25s ease-in-out;
-    }
-
-    .btn-circle:hover {
-        transform: scale(1.1);
-        box-shadow: 0 5px 14px rgba(0, 123, 255, 0.4);
-    }
-
-    .alert {
-        animation: fadeInDown 0.5s ease-in-out;
-    }
-
-    @keyframes fadeInDown {
-        from {
-            opacity: 0;
-            transform: translateY(-10px);
-        }
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-</style>
-
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@if(session('success'))
+<script>
+Swal.fire({
+    icon: 'success',
+    title: 'Berhasil!',
+    text: '{{ session("success") }}',
+    confirmButtonText: 'OK',
+    confirmButtonColor: '#4da3ff'
+});
+</script>
+@endif
 <script>
     function searchTable(inputId, tableId) {
         const input = document.getElementById(inputId);
@@ -115,3 +96,4 @@
         searchTable('searchGuru', 'tableGuru');
     });
 </script>
+@endsection
