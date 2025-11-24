@@ -199,4 +199,21 @@ class GuruController extends Controller
 
         return view('keterangan.semua_keterangan', compact('data'));
     }
+
+    public function kehadiran(Request $request)
+    {
+        $from = $request->from ?? date('Y-m-d');
+        $to   = $request->to   ?? date('Y-m-d');
+
+        $query = DB::table('kehadiranguru')
+            ->join('guru', 'guru.nip', '=', 'kehadiranguru.nip')
+            ->select('guru.nama', 'kehadiranguru.waktu', 'kehadiranguru.tanggal')
+            ->orderBy('kehadiranguru.tanggal', 'asc')
+            ->whereBetween('kehadiranguru.tanggal', [$from, $to]);
+
+        $qw_hadir = $query->get();
+
+        return view('kehadiran.hadir', compact('from', 'to', 'qw_hadir'));
+    }
+
 }

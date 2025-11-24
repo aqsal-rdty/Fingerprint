@@ -104,15 +104,20 @@
                             <i class="bi bi-folder2-open me-2 fs-5"></i> Mesin Absen
                         </a>
                     </li> --}}
-                    <!-- Tambahan Fingerprint Guru -->
                     <li class="nav-item mb-2">
                         <a class="nav-link d-flex align-items-center {{ request()->routeIs('fingerprintguru_index') ? 'active text-primary fw-bold' : 'text-dark' }}" href="{{ route('fingerprintguru_index') }}">
-                            <i class="bi bi-card-list me-2 fs-5"></i> Mesin Absen Guru
+                            <i class="bi bi-card-list me-2 fs-5"></i> Mesin Absen
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link d-flex align-items-center {{ request()->routeIs('kehadiran.index') ? 'active text-primary fw-bold' : 'text-dark' }}"
+                        href="{{ route('kehadiran.index') }}">
+                            <i class="bi bi-journal-check me-2 fs-5"></i> Kehadiran Guru
                         </a>
                     </li>
                     <li class="nav-item mb-2">
                         <a class="nav-link d-flex align-items-center {{ request()->routeIs('keteranganguru.*') ? 'active text-primary fw-bold' : 'text-dark' }}" href="{{ route('keteranganguru.index') }}">
-                            <i class="bi bi-journal-text me-2 fs-5"></i> Keterangan Guru
+                            <i class="bi bi-journal-text me-2 fs-5"></i> Keterangan Ketidak Hadiran
                         </a>
                     </li>
                 </ul>

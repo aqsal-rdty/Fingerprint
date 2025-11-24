@@ -1,6 +1,8 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
 <style>
     #sidebar {
         width: 240px;
@@ -36,6 +38,14 @@
     .nav-link.active {
         color: #0d6efd !important;
         font-weight: 700;
+    }
+
+    .btn-login {
+        background: #3B82F6;
+        font-weight: 600;
+    }
+    .btn-login:hover {
+        background: #2563EB;
     }
 </style>
 
@@ -97,6 +107,14 @@
                     <a class="nav-link {{ request()->routeIs('guru.rekapabsensi') ? 'active text-primary fw-bold' : 'text-dark' }}" href="{{ route('guru.rekapabsensi') }}">
                         <i class="bi bi-clock-history me-2 fs-5"></i> Rekap Absensi
                     </a>
+                </li>
+                <li class="nav-item mt-4">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button type="submit" class="nav-link text-dark d-flex align-items-center border-0 bg-transparent w-100">
+                            <i class="bi bi-box-arrow-in-right me-2 fs-5"></i> Login
+                        </button>
+                    </form>
                 </li>
             </ul>
         </div>
