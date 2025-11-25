@@ -61,8 +61,13 @@
 
         <div class="collapse navbar-collapse justify-content-end" id="topNavbar">
             <ul class="navbar-nav mb-2 mb-lg-0 align-items-center">
-                <li class="nav-item me-3 text-white">
-                    <i class="bi bi-person-circle me-1"></i> {{ Auth::user()->username ?? 'Guru' }}
+                <li class="nav-item">
+                    <form method="POST" action="{{ route('logout') }}">
+                        @csrf
+                        <button class="btn btn-outline-light fw-semibold text-white">
+                            <i class="bi bi-door-open me-1"></i> Login
+                        </button>
+                    </form>
                 </li>
             </ul>
         </div>
@@ -107,14 +112,6 @@
                     <a class="nav-link {{ request()->routeIs('guru.rekapabsensi') ? 'active text-primary fw-bold' : 'text-dark' }}" href="{{ route('guru.rekapabsensi') }}">
                         <i class="bi bi-clock-history me-2 fs-5"></i> Rekap Absensi
                     </a>
-                </li>
-                <li class="nav-item mt-4">
-                    <form method="POST" action="{{ route('logout') }}">
-                        @csrf
-                        <button type="submit" class="nav-link text-dark d-flex align-items-center border-0 bg-transparent w-100">
-                            <i class="bi bi-box-arrow-in-right me-2 fs-5"></i> Login
-                        </button>
-                    </form>
                 </li>
             </ul>
         </div>

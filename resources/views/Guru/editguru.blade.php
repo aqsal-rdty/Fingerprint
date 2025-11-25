@@ -22,7 +22,7 @@
             <h5>Edit Guru: {{ $guru->nama }}</h5>
         </div>
         <div class="card-body">
-            <form action="{{ route('guru.update', ['id' => $guru->id]) }}" method="POST">
+            <form action="{{ route('guru.update', ['nip' => $guru->nip]) }}" method="POST">
                 @csrf
                 @method('PUT')
 
