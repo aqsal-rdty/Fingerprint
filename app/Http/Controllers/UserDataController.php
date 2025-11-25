@@ -194,23 +194,28 @@ class UserDataController extends Controller
         $tahun = $request->get('tahun', date('Y'));
 
         $kehadiran = GR::whereMonth('tanggal', $bulan)
-        ->whereYear('tanggal', $tahun)
-        ->get();
+            ->whereYear('tanggal', $tahun)
+            ->get();
 
         $guru = Guru::all();
 
         $rekap = [];
-        foreach ($guru as $g) {
-            $totalTepat = $kehadiran
-                ->where('nip', $g->nip)
-                ->where('status', 1)
-                ->filter(fn($absen) => strtotime($absen->waktu) <= strtotime('07:00:00'))
-                ->count();
 
-            $totalTelat = $kehadiran
-                ->where('nip', $g->nip)
-                ->where('status', 1)
-                ->filter(fn($absen) => strtotime($absen->waktu) > strtotime('07:00:00'))
+        foreach ($guru as $g) {
+
+            $absenGuru = $kehadiran->where('nip', $g->nip);
+
+            $totalTepat = $absenGuru
+                ->filter(function ($absen) {
+                    return $absen->status == 0 &&
+                        strtotime($absen->waktu) <= strtotime('07:00:00');
+                })
+                ->count();
+                
+            $totalTelat = $absenGuru
+                ->filter(function ($absen) {
+                    return strtotime($absen->waktu) > strtotime('07:00:00');
+                })
                 ->count();
 
             $rekap[] = [
