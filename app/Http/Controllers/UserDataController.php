@@ -205,18 +205,17 @@ class UserDataController extends Controller
 
             $absenGuru = $kehadiran->where('nip', $g->nip);
 
-            $totalTepat = $absenGuru
-                ->filter(function ($absen) {
-                    return $absen->status == 0 &&
-                        strtotime($absen->waktu) <= strtotime('07:00:00');
-                })
-                ->count();
-                
-            $totalTelat = $absenGuru
-                ->filter(function ($absen) {
-                    return strtotime($absen->waktu) > strtotime('07:00:00');
-                })
-                ->count();
+            $absenMasuk = $absenGuru->filter(function ($absen) {
+                return strtotime($absen->waktu) < strtotime('12:00:00');
+            });
+
+            $totalTepat = $absenMasuk->filter(function ($absen) {
+                return strtotime($absen->waktu) <= strtotime('07:00:00');
+            })->count();
+
+            $totalTelat = $absenMasuk->filter(function ($absen) {
+                return strtotime($absen->waktu) > strtotime('07:00:00');
+            })->count();
 
             $rekap[] = [
                 'nama' => $g->nama,
