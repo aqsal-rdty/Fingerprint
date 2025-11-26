@@ -24,7 +24,6 @@
     }
 </style>
 
-{{-- Navbar --}}
 <nav class="navbar navbar-expand-lg navbar-dark fixed-top shadow-sm" style="background-color: #3B82F6;">
     <div class="container-fluid">
         <button class="btn btn-outline-light me-3" id="toggleSidebar">
@@ -62,7 +61,6 @@
     </div>
 </nav>
 
-{{-- Sidebar --}}
 <div class="d-flex">
     <nav id="sidebar" class="bg-light border-end position-fixed shadow-sm text-start">
         <div class="w-100" style="
@@ -74,7 +72,7 @@
 
         <div class="mt-4 mb-3 text-center">
             <h1 id="timeDisplay" style="font-size: 64px; color: #8c8c8c;">12:34</h1>
-            <p id="dateDisplay" class="text-muted">Tuesday, October 14th 2025</p>
+            <p id="dateDisplay" class="text-muted">Senin, 20 Oktober 2025</p>
         </div>
 
         <div class="p-3">
@@ -125,14 +123,12 @@
         </div>
     </nav>
 
-    {{-- Konten utama --}}
     <div id="mainContent" class="flex-grow-1" style="margin-left: 240px; margin-top: 56px; transition: all 0.3s;">
         @yield('content')
     </div>
 </div>
 
 <script>
-    // Waktu real-time
     function updateTime() {
         const now = new Date();
         const hours = now.getHours().toString().padStart(2,'0');
@@ -145,7 +141,6 @@
     setInterval(updateTime, 1000);
     updateTime();
 
-    // Toggle Sidebar
     document.getElementById('toggleSidebar').addEventListener('click', function() {
         const sidebar = document.getElementById('sidebar');
         const mainContent = document.getElementById('mainContent');
