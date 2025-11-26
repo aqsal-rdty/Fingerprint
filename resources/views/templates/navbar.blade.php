@@ -140,7 +140,7 @@
         document.getElementById('timeDisplay').textContent = `${hours}:${minutes}`;
 
         const options = { weekday:'long', year:'numeric', month:'long', day:'numeric' };
-        document.getElementById('dateDisplay').textContent = now.toLocaleDateString('en-US', options);
+        document.getElementById('dateDisplay').textContent = now.toLocaleDateString('id-ID', options);
     }
     setInterval(updateTime, 1000);
     updateTime();
