@@ -1,4 +1,3 @@
-<!-- Bootstrap CSS -->
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
@@ -111,6 +110,12 @@
                         <a class="nav-link d-flex align-items-center {{ request()->routeIs('kehadiran.index') ? 'active text-primary fw-bold' : 'text-dark' }}"
                         href="{{ route('kehadiran.index') }}">
                             <i class="bi bi-journal-check me-2 fs-5"></i> Kehadiran Guru
+                        </a>
+                    </li>
+                    <li class="nav-item mb-2">
+                        <a class="nav-link d-flex align-items-center {{ request()->routeIs('setketerlambatan.*') ? 'active text-primary fw-bold' : 'text-dark' }}"
+                        href="{{ route('setketerlambatan.index') }}">
+                            <i class="bi bi-clock-history me-2 fs-5"></i> Set Keterlambatan
                         </a>
                     </li>
                     <li class="nav-item mb-2">

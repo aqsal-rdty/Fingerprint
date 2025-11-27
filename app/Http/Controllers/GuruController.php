@@ -89,7 +89,8 @@ class GuruController extends Controller
         if ($from && $to) {
             $qw_hadir = DB::table('kehadiranguru')
                 ->join('guru', 'guru.nip', '=', 'kehadiranguru.nip')
-                ->select('guru.nama', 'kehadiranguru.tanggal', 'kehadiranguru.waktu')
+                ->leftJoin('seting_keterlambatan', 'seting_keterlambatan.nip', '=', 'guru.nip')
+                ->select('guru.nama', 'kehadiranguru.tanggal', 'kehadiranguru.waktu', 'seting_keterlambatan.jam_terlambat')
                 ->whereBetween('kehadiranguru.tanggal', [$from, $to])
                 ->orderBy('kehadiranguru.tanggal', 'desc')
                 ->get();
@@ -207,7 +208,8 @@ class GuruController extends Controller
 
         $query = DB::table('kehadiranguru')
             ->join('guru', 'guru.nip', '=', 'kehadiranguru.nip')
-            ->select('guru.nama', 'kehadiranguru.waktu', 'kehadiranguru.tanggal')
+            ->leftJoin('seting_keterlambatan', 'seting_keterlambatan.nip', '=', 'guru.nip')
+            ->select('guru.nama', 'kehadiranguru.waktu', 'kehadiranguru.tanggal', 'seting_keterlambatan.jam_terlambat')
             ->orderBy('kehadiranguru.tanggal', 'asc')
             ->whereBetween('kehadiranguru.tanggal', [$from, $to]);
 

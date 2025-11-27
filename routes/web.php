@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\GuruController;
 use App\Http\Controllers\FPGController;
 use App\Http\Controllers\UserDataController;
+use App\Http\Controllers\SetKeterlambatanController;
 use Illuminate\Support\Facades\Auth;
 // use App\Http\Controllers\LaporanController;
 // use App\Http\Controllers\RayonController;
@@ -74,6 +75,12 @@ Route::middleware(['admin'])->group(function () {
         Route::get('/keterangan', [GuruController::class, 'keterangan'])->name('keteranganguru.index');
         Route::get('/keterangan/semua', [GuruController::class, 'semuaKeterangan'])->name('keteranganguru.semua');
         Route::put('/guru/keterangan/update/{nip}', [GuruController::class, 'updateKeterangan'])->name('keteranganguru.update');
+    });
+
+    Route::prefix('guru')->middleware(['web', 'admin'])->group(function () {
+        Route::resource('setketerlambatan', SetKeterlambatanController::class);
+        Route::get('/seting-keterlambatan', [SetKeterlambatanController::class, 'index'])->name('seting.keterlambatan');
+        Route::post('/seting-keterlambatan/store', [SetKeterlambatanController::class, 'store'])->name('seting.keterlambatan.store');
     });
 
     // Route::prefix('laporan')->group(function () {
