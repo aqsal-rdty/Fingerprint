@@ -72,15 +72,14 @@
                                 <td>{{ $print->waktu }}</td>
                                 <td>{{ $print->tanggal }}</td>
                                 <td>
-                                    @php 
-                                        $awalMasuk = strtotime('07:01:00');
-                                        $akhirMasuk = strtotime('16:00:00');
+                                    @php
+                                        $timeKeluar = strtotime('16:00:00');
                                         $waktu = strtotime($print->waktu);
-
-                                        if ($waktu > $awalMasuk && $waktu < $akhirMasuk) {
+                                        $jamTerlambat = $print->jam_terlambat ? strtotime($print->jam_terlambat) : strtotime('07:01:00');
+                                        if ($waktu > $jamTerlambat && $waktu < $timeKeluar) {
                                             echo 'Telat';
                                             if ($print->keterangan) echo ' <small>('.$print->keterangan.')</small>';
-                                        } elseif ($waktu <= $awalMasuk) {
+                                        } elseif ($waktu <= $jamTerlambat) {
                                             echo 'Tepat';
                                         } else {
                                             echo 'Pulang';

@@ -117,7 +117,8 @@ class GuruController extends Controller
                 $join->on('kehadiranguru.tanggal', '=', 'keterlambatan.tanggal')
                     ->on('kehadiranguru.nip', '=', 'keterlambatan.nip');
             })
-            ->select('kehadiranguru.*', 'guru.nama', 'keterlambatan.keterangan')
+            ->leftJoin('seting_keterlambatan', 'seting_keterlambatan.nip', '=', 'guru.nip')
+            ->select('kehadiranguru.*', 'guru.nama', 'keterlambatan.keterangan', 'seting_keterlambatan.jam_terlambat')
             ->where('kehadiranguru.nip', $nip)
             ->orderBy('kehadiranguru.tanggal', 'desc');
 
