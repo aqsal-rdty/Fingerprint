@@ -61,7 +61,7 @@ Route::middleware(['admin'])->group(function () {
         Route::get('/deactive/{id}', [FPGController::class, 'deactive'])->name('fingerprintguru_deactive');
     });
     
-    Route::prefix('guru')->middleware(['admin'])->group(function () {
+    Route::prefix('guru')->group(function () {
         Route::get('/', [GuruController::class, 'index'])->name('guru.index');
         Route::get('/create', [GuruController::class, 'create'])->name('guru.create');
         Route::post('/store', [GuruController::class, 'store'])->name('guru.store');
@@ -71,13 +71,13 @@ Route::middleware(['admin'])->group(function () {
         Route::get('/rekap-semua', [GuruController::class, 'rekapSemua'])->name('guru.detail_rekapsemua');
     });
 
-    Route::prefix('guru')->middleware(['admin'])->group(function () {
+    Route::prefix('guru')->middleware(['web', 'admin'])->group(function () {
         Route::get('/keterangan', [GuruController::class, 'keterangan'])->name('keteranganguru.index');
         Route::get('/keterangan/semua', [GuruController::class, 'semuaKeterangan'])->name('keteranganguru.semua');
         Route::put('/guru/keterangan/update/{nip}', [GuruController::class, 'updateKeterangan'])->name('keteranganguru.update');
     });
 
-    Route::prefix('guru')->middleware(['admin'])->group(function () {
+    Route::prefix('guru')->middleware(['web', 'admin'])->group(function () {
         Route::resource('setketerlambatan', SetKeterlambatanController::class);
         Route::get('/seting-keterlambatan', [SetKeterlambatanController::class, 'index'])->name('seting.keterlambatan');
         Route::post('/seting-keterlambatan/store', [SetKeterlambatanController::class, 'store'])->name('seting.keterlambatan.store');
