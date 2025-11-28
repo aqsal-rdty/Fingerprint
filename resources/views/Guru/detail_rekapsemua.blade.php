@@ -54,7 +54,7 @@
                                     <td>{{ $print->tanggal }}</td>
                                     <td>
                                         @php
-                                            $timeKeluar = strtotime('16:00:00');
+                                            $timeKeluar = $print->jam_pulang ? strtotime($print->jam_pulang) : strtotime('16:00:00');
                                             $waktu = strtotime($print->waktu);
                                             $jamTerlambat = $print->jam_terlambat ? strtotime($print->jam_terlambat) : strtotime('07:01:00');
                                             if ($waktu > $jamTerlambat && $waktu < $timeKeluar) {

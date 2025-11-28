@@ -17,9 +17,9 @@
             <form action="{{ route('seting.keterlambatan.store') }}" method="POST">
                 @csrf
 
-                <div class="row g-3">
+                <div class="row g-3 align-items-end">
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label fw-semibold">Guru</label>
                         <select name="nip" class="form-control" required>
                             <option value="">-- Pilih Guru --</option>
@@ -29,18 +29,24 @@
                         </select>
                     </div>
 
-                    <div class="col-md-6">
+                    <div class="col-md-4">
                         <label class="form-label fw-semibold">Jam Maksimal Terlambat</label>
                         <input type="time" name="jam_terlambat" class="form-control" required>
                     </div>
 
-                    <div class="col-md-12">
-                        <button class="btn btn-primary w-100">
-                            <i class="bi bi-save"></i> Simpan Seting
-                        </button>
+                    <div class="col-md-4">
+                        <label class="form-label fw-semibold">Jam Maksimal Pulang</label>
+                        <input type="time" name="jam_pulang" class="form-control">
                     </div>
 
                 </div>
+
+                <div class="mt-3">
+                    <button class="btn btn-primary w-100">
+                        <i class="bi bi-save"></i> Simpan Seting
+                    </button>
+                </div>
+
             </form>
 
         </div>
@@ -58,6 +64,7 @@
                         <th>Nama Guru</th>
                         <th>NIP</th>
                         <th>Jam Keterlambatan</th>
+                        <th>Jam Pulang</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -68,6 +75,7 @@
                         <td>{{ $s->nama }}</td>
                         <td>{{ $s->nip }}</td>
                         <td>{{ $s->jam_terlambat }}</td>
+                        <td>{{ $s->jam_pulang ?? '-' }}</td>
                     </tr>
                     @endforeach
                 </tbody>
@@ -77,4 +85,19 @@
     </div>
 
 </div>
+@endsection
+
+@section('scripts')
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+@if(session('success'))
+<script>
+Swal.fire({
+    icon: 'success',
+    title: 'Berhasil!',
+    text: '{{ session("success") }}',
+    confirmButtonText: 'OK',
+    confirmButtonColor: '#4da3ff'
+});
+</script>
+@endif
 @endsection

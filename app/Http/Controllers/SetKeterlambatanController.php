@@ -22,24 +22,25 @@ class SetKeterlambatanController extends Controller
         $request->validate([
             'nip' => 'required',
             'jam_terlambat' => 'required',
+            'jam_pulang' => 'nullable',
         ]);
 
         $cek = DB::table('seting_keterlambatan')->where('nip', $request->nip)->first();
+        $data = [
+            'jam_terlambat' => $request->jam_terlambat,
+            'jam_pulang' => $request->jam_pulang,
+            'updated_at' => now()
+        ];
 
         if ($cek) {
-            DB::table('seting_keterlambatan')->where('nip', $request->nip)->update([
-                'jam_terlambat' => $request->jam_terlambat,
-                'updated_at' => now()
-            ]);
+            DB::table('seting_keterlambatan')->where('nip', $request->nip)->update($data);
         } else {
-            DB::table('seting_keterlambatan')->insert([
-                'nip' => $request->nip,
-                'jam_terlambat' => $request->jam_terlambat,
-                'created_at' => now(),
-                'updated_at' => now()
-            ]);
+            $data['nip'] = $request->nip;
+            $data['created_at'] = now();
+            DB::table('seting_keterlambatan')->insert($data);
         }
 
-        return back()->with('success', 'Seting keterlambatan berhasil disimpan!');
+        return back()->with('success', 'Seting keterlambatan dan jam pulang berhasil disimpan!');
     }
+
 }
