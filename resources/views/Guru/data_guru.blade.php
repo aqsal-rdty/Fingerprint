@@ -26,6 +26,7 @@
                         <th>NIP</th>
                         <th>Nama</th>
                         <th>Status</th>
+                        <th>No WA</th>
                         <th>Action</th>
                     </tr>
                 </thead>
@@ -36,6 +37,7 @@
                             <td>{{ $g->nip }}</td>
                             <td>{{ $g->nama }}</td>
                             <td>{{ $g->statuss }}</td>
+                            <td>{{ $g->no_wa }}</td>
                             <td class="text-center">
                                 <a href="{{ route('guru.edit', ['nip' => $g->nip]) }}" 
                                     class="btn btn-outline-primary btn-sm" 

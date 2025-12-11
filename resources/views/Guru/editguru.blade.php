@@ -37,6 +37,12 @@
                 </div>
 
                 <div class="mb-3">
+                    <label for="no_wa" class="form-label">Nomor WhatsApp</label>
+                    <input type="text" class="form-control" id="no_wa" name="no_wa" 
+                           value="{{ old('no_wa', $guru->no_wa) }}" placeholder="Contoh: 6281234567890">
+                </div>
+
+                <div class="mb-3">
                     <label for="statuss" class="form-label">Status</label>
                     <select class="form-select" name="statuss" id="statuss">
                         <option value="1" {{ $guru->statuss == 1 ? 'selected' : '' }}>1</option>

@@ -42,6 +42,16 @@
                     @enderror
                 </div>
 
+                <div class="mb-3">
+                    <label for="no_wa" class="form-lable">Nomor WhatsApp</label>
+                    <input type="text" name="no_wa" id="no_wa"
+                            class="form_control @error('no_wa') is-invalid @enderror"
+                            value="{{ old('no_wa') }}">
+                    @error('no_wa')
+                        <div class="invalid-feedback">{{ $message }}</div>
+                    @enderror
+                </div>
+
                 <div class="d-flex justify-content-between">
                     <button type="submit" class="btn btn-primary">
                         <i class="bi bi-save"></i> Simpan

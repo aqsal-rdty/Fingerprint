@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Http;
 use App\Models\FingerprintGuru as FPG;
 use App\Models\KehadiranGuru as GR;
 use Rats\Zkteco\Lib\ZKTeco;
@@ -20,7 +22,8 @@ class UserDataController extends Controller
         $fp = FPG::where('status', 1)->orderBy('ip')->get();
 
         if ($fp->isEmpty()) {
-            return "Tidak ada mesin absensi aktif";
+            Log::warning("Tidak ada mesin absensi aktif");
+            return false;
         }
 
         $today = date('Y-m-d');
@@ -32,57 +35,76 @@ class UserDataController extends Controller
 
                 if ($zk->connect()) {
                     $logs = $zk->getAttendance();
+
                     foreach ($logs as $log) {
                         $nip = $log['id'];
                         $datetime = $log['timestamp'];
                         $tanggal = date('Y-m-d', strtotime($datetime));
                         $waktu = date('H:i:s', strtotime($datetime));
 
-                        if ($tanggal == $today) {
-                            $exists = GR::where('nip', $nip)
-                                ->where('tanggal', $tanggal)
-                                ->first();
+                        if ($tanggal != $today) {
+                            continue;
+                        }
 
-                            if (!$exists) {
-                                $create[] = [
-                                    'nip' => $nip,
-                                    'tanggal' => $tanggal,
-                                    'waktu' => $waktu,
-                                    'status' => 1,
-                                    // 'pulang' => null
-                                ];
+                        $exists = GR::where('nip', $nip)
+                            ->where('tanggal', $tanggal)
+                            ->first();
+
+                        if (!$exists) {
+                            $create[] = [
+                                'nip' => $nip,
+                                'tanggal' => $tanggal,
+                                'waktu' => $waktu,
+                                'status' => 1,
+                                'wa_sent' => true,
+                            ];
+
+                            // Kirim WhatsApp HANYA SEKALI
+                            $guru = Guru::where('nip', $nip)->first();
+
+                            if ($guru && $guru->no_wa) {
+                                $nomor = $this->formatNomorWhatsApp($guru->no_wa);
+                                $hariInggris = date('l', strtotime($tanggal));
+                                $hari = $this->hariIndonesia($hariInggris);
+                                $tanggalPesan = $this->bulanIndonesia($tanggal);
+
+                                $pesan = "Hallo, {$guru->nama}.\n".
+                                        "Kehadiran Anda pada hari {$hari}, {$tanggalPesan} ".
+                                        "pukul {$waktu}.\nTerima kasih.";
+
+                                try {
+                                    sleep(3); // jeda biar aman
+                                    $this->kirimWA($nomor, $pesan);
+                                } catch (\Exception $e) {
+                                    Log::error("WA Error: " . $e->getMessage());
+                                }
                             }
 
-                            else {
-                                if ($waktu >= "16:00:00" && $exists->pulang == null) {
-                                    GR::where('id', $exists->id)->update([
-                                        'pulang' => $waktu
-                                    ]);
-                                }
+                        } 
+                        else {
+                            if ($waktu >= "16:00:00" && $exists->pulang == null) {
+                                $exists->update([
+                                    'pulang' => $waktu
+                                ]);
                             }
                         }
                     }
 
                     $zk->disconnect();
                 } else {
-                    return "Gagal terhubung ke mesin dengan IP: " . $value->ip;
+                    Log::error("Gagal terhubung ke mesin dengan IP: " . $value->ip);
                 }
 
             } catch (\Exception $e) {
-                return "Error koneksi ke mesin {$value->ip}: " . $e->getMessage();
+                Log::error("Error koneksi ke mesin {$value->ip}: " . $e->getMessage());
             }
         }
 
+        // Insert absensi baru
         if (!empty($create)) {
             GR::insert($create);
         }
 
-        $absensi = GR::with('guru')
-            ->where('tanggal', $today)
-            ->orderBy('waktu', 'asc')
-            ->get();
-
-        // return view('guru.GuruEuy', ['data' => $absensi]);
         return true;
     }
 
@@ -248,4 +270,91 @@ class UserDataController extends Controller
         return '';
     }
 
+    private function hariIndonesia($day)
+    {
+        $hari = [
+            'Monday'    => 'Senin',
+            'Tuesday'   => 'Selasa',
+            'Wednesday' => 'Rabu',
+            'Thursday'  => 'Kamis',
+            'Friday'    => 'Jumat',
+            'Saturday'  => 'Sabtu',
+            'Sunday'    => 'Minggu'
+        ];
+
+        return $hari[$day] ?? $day;
+    }
+
+    private function bulanIndonesia($tanggal)
+    {
+        $bulanInggris = [
+            'January' => 'Januari',
+            'February' => 'Februari',
+            'March' => 'Maret',
+            'April' => 'April',
+            'May' => 'Mei',
+            'June' => 'Juni',
+            'July' => 'Juli',
+            'August' => 'Agustus',
+            'September' => 'September',
+            'October' => 'Oktober',
+            'November' => 'November',
+            'December' => 'Desember'
+        ];
+
+        $bln = date('F', strtotime($tanggal));
+        $tgl = date('d', strtotime($tanggal));
+        $thn = date('Y', strtotime($tanggal));
+
+        return $tgl . ' ' . ($bulanInggris[$bln] ?? $bln) . ' ' . $thn;
+    }
+
+    private function formatNomorWhatsApp($nomor)
+    {
+        $nomor = preg_replace('/[^0-9]/', '', $nomor);
+        if (substr($nomor, 0, 1) == '0') {
+            $nomor = '62' . substr($nomor, 1);
+        }
+        if (substr($nomor, 0, 2) == '62') {
+            return $nomor;
+        }
+        return '62' . $nomor;
+    }
+
+    private function kirimWA($nomor, $pesan)
+    {
+        $url = 'http://localhost:3000/send-message';
+        $data = [
+            'phoneNumber' => $nomor,
+            'message' => $pesan
+        ];
+
+        try {
+            Log::info("Mengirim pesan ke {$nomor}: {$pesan}");
+            $response = Http::post($url, $data);
+
+            if ($response->successful()) {
+                Log::info("Pesan berhasil dikirim ke {$nomor}");
+                return true;
+            } else {
+                Log::error("Gagal kirim. Status: ".$response->status());
+                return false;
+            }
+        } catch (\Exception $e) {
+            Log::error("Error kirim WA: " . $e->getMessage());
+            return false;
+        }
+    }
+
+    // public function testKirimPesan($nomor)
+    // {
+    //     $nomor = $this->formatNomorWhatsApp($nomor);
+    //     $pesan = "Hallo, Acep Rahmat.\nKehadiran Anda pada hari " . date('l') . ", " . date('d F Y') . " yaitu pukul 06:42:04.\nTerima kasih.";
+    //     $result = $this->kirimPesanFonnte($nomor, $pesan);
+    //     if ($result) {
+    //         return "Pesan berhasil terkirim ke {$nomor}";
+    //     } else {
+    //         return "Pesan gagal terkirim ke {$nomor}";
+    //     }
+    // }
 }

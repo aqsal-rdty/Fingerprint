@@ -38,6 +38,7 @@ Route::middleware(['admin'])->group(function () {
     Route::get('/guru/dashboard', [GuruController::class, 'dashboard'])->name('guru.dashboard');
     Route::get('/kehadiran', [GuruController::class, 'kehadiran'])->name('kehadiran.index');
     Route::get('/guru/kehadiran', [UserDataController::class, 'indexguru'])->name('guru.kehadiran');
+    Route::get('/test-kirim-pesan/{nomor}', [UserDataController::class, 'testKirimPesan']);
     Route::get('/kehadiran/refresh', [UserDataController::class, 'refreshKehadiran'])->name('kehadiran.refresh');  
     Route::get('/guru/sinkronisasi', [UserDataController::class, 'sinkronguru'])->name('kehadiran.sinkron'); 
     Route::get('/sinkronguru', [UserDataController::class, 'sinkronguru'])->name('sinkron_guru');

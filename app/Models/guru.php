@@ -9,7 +9,7 @@ use PhpParser\Node\Expr\FuncCall;
 
 class Guru extends Model
 {
-    use HasFactory;
+    use HasFactory; 
     public $timestamps = false;
     protected $table = 'guru';
     protected $primaryKey = 'nip';
@@ -19,7 +19,8 @@ class Guru extends Model
     protected $fillable = [
         'nip', 
         'nama', 
-        'status'
+        'status',
+        'no_wa'
     ];
 
     public function kehadiran() {

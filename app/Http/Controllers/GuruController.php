@@ -27,6 +27,7 @@ class GuruController extends Controller
             'nip' => 'required|unique:guru,nip',
             'nama' => 'required|string|max:255',
             'statuss' => 'required|string|max:50',
+            'no_wa' => 'required|string|max:20'
         ]);
 
         Guru::create($request->all());
@@ -47,6 +48,7 @@ class GuruController extends Controller
             'nip' => 'required|unique:guru,nip,' . $guru->nip . ',nip',
             'nama' => 'required|string|max:255',
             'statuss' => 'required|in:0,1',
+            'no_wa' => 'nullable|string|max:20'
         ]);
 
         $guru->nip = $request->input('nip');
