@@ -17,7 +17,7 @@ class UserDataController extends Controller
         ini_set('max_execution_time', 0);
     }
 
-    public function sinkronguru()
+   public function sinkronguru()
     {
         $fp = FPG::where('status', 1)->orderBy('ip')->get();
 
@@ -27,7 +27,6 @@ class UserDataController extends Controller
         }
 
         $today = date('Y-m-d');
-        $create = [];
 
         foreach ($fp as $value) {
             try {
@@ -42,45 +41,49 @@ class UserDataController extends Controller
                         $tanggal = date('Y-m-d', strtotime($datetime));
                         $waktu = date('H:i:s', strtotime($datetime));
 
-                        if ($tanggal != $today) {
-                            continue;
-                        }
+                        if ($tanggal != $today) continue;
 
                         $exists = GR::where('nip', $nip)
                             ->where('tanggal', $tanggal)
                             ->first();
 
                         if (!$exists) {
-                            $create[] = [
-                                'nip' => $nip,
+                            $absen = GR::create([
+                                'nip'     => $nip,
                                 'tanggal' => $tanggal,
-                                'waktu' => $waktu,
-                                'status' => 1,
-                                'wa_sent' => true,
-                            ];
+                                'waktu'   => $waktu,
+                                'status'  => 1,
+                                'wa_sent' => false
+                            ]);
 
-                            // Kirim WhatsApp HANYA SEKALI
+                            // Ambil data guru
                             $guru = Guru::where('nip', $nip)->first();
 
                             if ($guru && $guru->no_wa) {
+
                                 $nomor = $this->formatNomorWhatsApp($guru->no_wa);
-                                $hariInggris = date('l', strtotime($tanggal));
-                                $hari = $this->hariIndonesia($hariInggris);
+                                $hari = $this->hariIndonesia(date('l', strtotime($tanggal)));
                                 $tanggalPesan = $this->bulanIndonesia($tanggal);
 
-                                $pesan = "Hallo, {$guru->nama}.\n".
-                                        "Kehadiran Anda pada hari {$hari}, {$tanggalPesan} ".
-                                        "pukul {$waktu}.\nTerima kasih.";
+                                $pesan = "📌 SMK WIKRAMA BOGOR
+                                Hallo, {$guru->nama}.
+                                Kehadiran Anda pada hari {$hari}, {$tanggalPesan} pukul {$waktu}.
+                                Terima kasih.";
 
                                 try {
-                                    sleep(3); // jeda biar aman
+
+                                    sleep(3);
                                     $this->kirimWA($nomor, $pesan);
+
+                                    $absen->update(['wa_sent' => true]);
+
                                 } catch (\Exception $e) {
                                     Log::error("WA Error: " . $e->getMessage());
                                 }
                             }
 
-                        } 
+                        }
+
                         else {
                             if ($waktu >= "16:00:00" && $exists->pulang == null) {
                                 $exists->update([
@@ -88,6 +91,7 @@ class UserDataController extends Controller
                                 ]);
                             }
                         }
+
                     }
 
                     $zk->disconnect();
@@ -98,11 +102,6 @@ class UserDataController extends Controller
             } catch (\Exception $e) {
                 Log::error("Error koneksi ke mesin {$value->ip}: " . $e->getMessage());
             }
-        }
-
-        // Insert absensi baru
-        if (!empty($create)) {
-            GR::insert($create);
         }
 
         return true;

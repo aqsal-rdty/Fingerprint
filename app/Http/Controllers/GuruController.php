@@ -12,7 +12,7 @@ class GuruController extends Controller
 {
     public function index()
     {
-        $guru = Guru::orderBy('nip', 'asc')->get();
+        $guru = Guru::orderBy('nama', 'asc')->get();
         return view('guru.data_guru', compact('guru'));
     }
 
@@ -54,6 +54,7 @@ class GuruController extends Controller
         $guru->nip = $request->input('nip');
         $guru->nama = $request->input('nama');
         $guru->statuss = $request->input('statuss');
+        $guru->no_wa = $request->input('no_wa');
         $guru->save();
 
         return redirect()->route('guru.index')->with('success', 'Data guru berhasil diperbarui.');
