@@ -43,11 +43,13 @@ class UserDataController extends Controller
 
                         if ($tanggal != $today) continue;
 
+                        // cek apakah data sudah ada
                         $exists = GR::where('nip', $nip)
                             ->where('tanggal', $tanggal)
                             ->first();
 
                         if (!$exists) {
+                            //proses jam masuk
                             $absen = GR::create([
                                 'nip'     => $nip,
                                 'tanggal' => $tanggal,
@@ -56,7 +58,7 @@ class UserDataController extends Controller
                                 'wa_sent' => false
                             ]);
 
-                            // Ambil data guru
+                            // Ambil data guru berdasarkan nip
                             $guru = Guru::where('nip', $nip)->first();
 
                             if ($guru && $guru->no_wa) {
@@ -65,14 +67,13 @@ class UserDataController extends Controller
                                 $hari = $this->hariIndonesia(date('l', strtotime($tanggal)));
                                 $tanggalPesan = $this->bulanIndonesia($tanggal);
 
-                                $pesan = "📌 SMK WIKRAMA BOGOR
-                                Hallo, {$guru->nama}.
-                                Kehadiran Anda pada hari {$hari}, {$tanggalPesan} pukul {$waktu}.
-                                Terima kasih.";
+                                $pesan = "Hallo, {$guru->nama}.\n".
+                                        "Kehadiran Anda pada hari {$hari}, {$tanggalPesan} ".
+                                        "pukul {$waktu}.\nTerima kasih.";
 
                                 try {
-
-                                    sleep(3);
+                                    //kirim wa via API nodejs
+                                    sleep(5);
                                     $this->kirimWA($nomor, $pesan);
 
                                     $absen->update(['wa_sent' => true]);
