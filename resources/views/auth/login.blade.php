@@ -82,15 +82,22 @@
 
         <form method="POST" action="{{ route('login.post') }}">
             @csrf
+
             <div class="mb-3">
                 <label class="form-label">Email Address</label>
-                <input type="text" name="username" class="form-control" placeholder="Enter your email" required autofocus>
+                <input type="text" name="email" class="form-control"
+                    placeholder="Enter your email" required autofocus>
             </div>
+
             <div class="mb-3">
                 <label class="form-label">Password</label>
-                <input type="password" name="password" class="form-control" placeholder="Enter your password" required>
+                <input type="password" name="password" class="form-control"
+                    placeholder="Enter your password" required>
             </div>
-            <button class="btn btn-login w-100 text-white"><i class="fa-solid fa-right-to-bracket me-2"></i> Sign In</button>
+
+            <button class="btn btn-login w-100 text-white">
+                <i class="fa-solid fa-right-to-bracket me-2"></i> Sign In
+            </button>
         </form>
         <p class="text-center text-muted mt-3" style="font-size:0.75rem;">© 2025 Fingerprint. All rights reserved.</p>
     </div>

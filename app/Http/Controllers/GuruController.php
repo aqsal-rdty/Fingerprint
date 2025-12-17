@@ -7,6 +7,8 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\RekapGuruExport;
+use Illuminate\Support\Facades\Auth;
+use App\Models\KehadiranGuru;
 
 class GuruController extends Controller
 {
@@ -220,6 +222,56 @@ class GuruController extends Controller
         $qw_hadir = $query->get();
 
         return view('kehadiran.hadir', compact('from', 'to', 'qw_hadir'));
+    }
+
+    public function home()
+    {
+        $guru = auth()->user();
+        $nip = $guru->nip;
+
+        $bulanSekarang = date('Y');
+        $kehadiran = DB::table('kehadiranguru')
+            ->leftJoin('seting_keterlambatan', 'seting_keterlambatan.nip', '=', 'kehadiranguru.nip')
+            ->select(
+                DB::raw('MONTH(tanggal) as bulan'),
+                DB::raw('SUM(CASE WHEN waktu <= IFNULL(seting_keterlambatan.jam_terlambat, "07:01:00") THEN 1 ELSE 0 END) as tepat'),
+                DB::raw('SUM(CASE WHEN waktu > IFNULL(seting_keterlambatan.jam_terlambat, "07:01:00") AND waktu < IFNULL(seting_keterlambatan.jam_pulang, "16:00:00") THEN 1 ELSE 0 END) as telat')
+            )
+            ->where('kehadiranguru.nip', $nip)
+            ->whereYear('tanggal', $bulanSekarang)
+            ->groupBy(DB::raw('MONTH(tanggal)'))
+            ->orderBy('bulan')
+            ->get();
+
+        $labels = [];
+        $dataTepat = [];
+        $dataTelat = [];
+
+        for($i=1; $i<=12; $i++) {
+            $labels[] = date('F', mktime(0,0,0,$i,1));
+            $bulanData = $kehadiran->firstWhere('bulan', $i);
+            $dataTepat[] = $bulanData->tepat ?? 0;
+            $dataTelat[] = $bulanData->telat ?? 0;
+        }
+
+        return view('guru.home', compact('labels', 'dataTepat', 'dataTelat'));
+    }
+
+    public function rekapSaya()
+    {
+        $nip = Auth::user()->nip;
+
+        $qw_hadir = DB::table('kehadiranguru')
+            ->join('guru', 'kehadiranguru.nip', '=', 'guru.nip')
+            ->leftJoin('seting_keterlambatan', 'seting_keterlambatan.nip', '=', 'guru.nip')
+            ->select('kehadiranguru.*', 'guru.nama', 'seting_keterlambatan.jam_terlambat', 'seting_keterlambatan.jam_pulang')
+            ->where('kehadiranguru.nip', $nip)
+            ->orderBy('kehadiranguru.tanggal', 'desc')
+            ->get();
+
+        return view('guru.rekap', [
+            'qw_hadir' => $qw_hadir
+        ]);
     }
 
 }

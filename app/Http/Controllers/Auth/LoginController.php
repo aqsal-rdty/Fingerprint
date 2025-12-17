@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
 class LoginController extends Controller
@@ -15,21 +16,30 @@ class LoginController extends Controller
 
     public function login(Request $request)
     {
-        $username = $request->username;
-        $password = $request->password;
+        $credentials = $request->validate([
+            'email'    => 'required|string',
+            'password' => 'required'
+        ]);
 
-        // Cek kredensial admin manual (bisa diubah sesuai kebutuhan)
-        if ($username === 'admin' && $password === 'admin123') {
-            Session::put('is_admin', true);
-            return redirect()->route('dashboard');
+        if (Auth::attempt($credentials)) {
+            $request->session()->regenerate();
+
+            if (auth()->user()->role === 'admin') {
+                return redirect()->route('dashboard');
+            }
+
+            return redirect()->route('guru.home');
         }
 
-        return redirect()->back()->with('error', 'Username atau password salah!');
+        return back()->with('error', 'Email atau password salah');
     }
 
-    public function logout()
+    public function logout(Request $request)
     {
-        Session::forget('is_admin');
-        return redirect()->route('login')->with('success', 'Berhasil logout!');
+        Auth::logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect()->route('login');
     }
 }

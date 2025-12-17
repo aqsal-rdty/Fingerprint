@@ -27,6 +27,7 @@ class UserDataController extends Controller
         }
 
         $today = date('Y-m-d');
+        $create = [];
 
         foreach ($fp as $value) {
             try {
@@ -41,30 +42,30 @@ class UserDataController extends Controller
                         $tanggal = date('Y-m-d', strtotime($datetime));
                         $waktu = date('H:i:s', strtotime($datetime));
 
-                        if ($tanggal != $today) continue;
+                        if ($tanggal != $today) {
+                            continue;
+                        }
 
-                        // cek apakah data sudah ada
                         $exists = GR::where('nip', $nip)
                             ->where('tanggal', $tanggal)
                             ->first();
 
                         if (!$exists) {
-                            //proses jam masuk
-                            $absen = GR::create([
-                                'nip'     => $nip,
+                            $create[] = [
+                                'nip' => $nip,
                                 'tanggal' => $tanggal,
-                                'waktu'   => $waktu,
-                                'status'  => 1,
-                                'wa_sent' => false
-                            ]);
+                                'waktu' => $waktu,
+                                'status' => 1,
+                                'wa_sent' => true,
+                            ];
 
-                            // Ambil data guru berdasarkan nip
+                            // Kirim WhatsApp HANYA SEKALI
                             $guru = Guru::where('nip', $nip)->first();
 
                             if ($guru && $guru->no_wa) {
-
                                 $nomor = $this->formatNomorWhatsApp($guru->no_wa);
-                                $hari = $this->hariIndonesia(date('l', strtotime($tanggal)));
+                                $hariInggris = date('l', strtotime($tanggal));
+                                $hari = $this->hariIndonesia($hariInggris);
                                 $tanggalPesan = $this->bulanIndonesia($tanggal);
 
                                 $pesan = "Hallo, {$guru->nama}.\n".
@@ -72,27 +73,25 @@ class UserDataController extends Controller
                                         "pukul {$waktu}.\nTerima kasih.";
 
                                 try {
-                                    //kirim wa via API nodejs
-                                    sleep(5);
+                                    sleep(3); // jeda biar aman
                                     $this->kirimWA($nomor, $pesan);
-
-                                    $absen->update(['wa_sent' => true]);
-
                                 } catch (\Exception $e) {
                                     Log::error("WA Error: " . $e->getMessage());
                                 }
                             }
 
-                        }
-
+                        } 
                         else {
-                            if ($waktu >= "16:00:00" && $exists->pulang == null) {
-                                $exists->update([
-                                    'pulang' => $waktu
-                                ]);
+                            if ($waktu >= '16:00:00') {
+
+                                if ($exists->pulang == null || $waktu > $exists->pulang) {
+                                    $exists->update([
+                                        'pulang' => $waktu
+                                    ]);
+                                }
+
                             }
                         }
-
                     }
 
                     $zk->disconnect();
@@ -103,6 +102,11 @@ class UserDataController extends Controller
             } catch (\Exception $e) {
                 Log::error("Error koneksi ke mesin {$value->ip}: " . $e->getMessage());
             }
+        }
+
+        // Insert absensi baru
+        if (!empty($create)) {
+            GR::insert($create);
         }
 
         return true;

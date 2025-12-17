@@ -9,6 +9,7 @@ use App\Http\Controllers\FPGController;
 use App\Http\Controllers\UserDataController;
 use App\Http\Controllers\SetKeterlambatanController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Auth\PasswordController;
 // use App\Http\Controllers\LaporanController;
 // use App\Http\Controllers\RayonController;
 // use App\Http\Controllers\JurusanController;
@@ -29,24 +30,29 @@ Route::post('/logout', function () {
 
 Route::get('/excel/{nip_pegawai}', [GuruController::class, 'exportExcel'])->name('rekapkehadiran.export');
 Route::get('/rekapkehadiran/{nip}', [GuruController::class, 'LihatRekap'])->name('rekapkehadiran.lihat');
+Route::get('/guru/kehadiran', [UserDataController::class, 'indexguru'])->name('guru.kehadiran');
+Route::get('/guru/rekap-bulan', [UserDataController::class, 'rekapBulan'])->name('guru.rekapbulanan');
+Route::get('/rekap-semua', [GuruController::class, 'rekapSemua'])->name('guru.detail_rekapsemua');
+Route::get('/rekap-absensi', [GuruController::class, 'rekapAbsensi'])->name('guru.rekapabsensi');
 
-Route::middleware(['admin'])->group(function () {
+Route::middleware(['auth', 'guru'])->group(function () {
+    Route::get('/guru/home', [App\Http\Controllers\GuruController::class, 'home'])->name('guru.home');
+    Route::get('/guru/rekap-saya', [GuruController::class, 'rekapSaya'])->name('guru.rekap.saya');
+    Route::get('/guru/ganti-password', [PasswordController::class, 'form'])->name('guru.password.form');
+    Route::post('/guru/ganti-password', [PasswordController::class, 'update'])->name('guru.password.update');
+});
+
+Route::middleware(['auth', 'admin'])->group(function () {
     Route::get('/dashboard', function () {
         return view('dashboard');
     })->name('dashboard');
 
     Route::get('/guru/dashboard', [GuruController::class, 'dashboard'])->name('guru.dashboard');
     Route::get('/kehadiran', [GuruController::class, 'kehadiran'])->name('kehadiran.index');
-    Route::get('/guru/kehadiran', [UserDataController::class, 'indexguru'])->name('guru.kehadiran');
     Route::get('/test-kirim-pesan/{nomor}', [UserDataController::class, 'testKirimPesan']);
     Route::get('/kehadiran/refresh', [UserDataController::class, 'refreshKehadiran'])->name('kehadiran.refresh');  
     Route::get('/guru/sinkronisasi', [UserDataController::class, 'sinkronguru'])->name('kehadiran.sinkron'); 
     Route::get('/sinkronguru', [UserDataController::class, 'sinkronguru'])->name('sinkron_guru');
-    Route::get('/guru/rekap-bulan', [UserDataController::class, 'rekapBulan'])->name('guru.rekapbulanan');
-
-    Route::prefix('guru')->middleware(['admin'])->group(function () {
-        Route::get('/rekap-absensi', [GuruController::class, 'rekapAbsensi'])->name('guru.rekapabsensi');
-    });
 
     Route::get('/master', [MasterController::class, 'index'])->name('master.index');    
     
@@ -69,7 +75,6 @@ Route::middleware(['admin'])->group(function () {
         Route::get('/edit/{nip}', [GuruController::class, 'edit'])->name('guru.edit');
         Route::delete('/delete/{nip}', [GuruController::class, 'destroy'])->name('guru.destroy');
         Route::put('/update/{nip}', [GuruController::class, 'update'])->name('guru.update');
-        Route::get('/rekap-semua', [GuruController::class, 'rekapSemua'])->name('guru.detail_rekapsemua');
     });
 
     Route::prefix('guru')->middleware(['web', 'admin'])->group(function () {
