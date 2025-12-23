@@ -19,6 +19,10 @@ class UserDataController extends Controller
 
    public function sinkronguru()
     {
+        // biar proses lama tidak timeout
+        ini_set('max_execution_time', 0);
+
+        // ambil mesin fingerprint aktif
         $fp = FPG::where('status', 1)->orderBy('ip')->get();
 
         if ($fp->isEmpty()) {
@@ -27,86 +31,86 @@ class UserDataController extends Controller
         }
 
         $today = date('Y-m-d');
-        $create = [];
 
         foreach ($fp as $value) {
             try {
                 $zk = new ZKTeco($value->ip);
 
-                if ($zk->connect()) {
-                    $logs = $zk->getAttendance();
-
-                    foreach ($logs as $log) {
-                        $nip = $log['id'];
-                        $datetime = $log['timestamp'];
-                        $tanggal = date('Y-m-d', strtotime($datetime));
-                        $waktu = date('H:i:s', strtotime($datetime));
-
-                        if ($tanggal != $today) {
-                            continue;
-                        }
-
-                        $exists = GR::where('nip', $nip)
-                            ->where('tanggal', $tanggal)
-                            ->first();
-
-                        if (!$exists) {
-                            $create[] = [
-                                'nip' => $nip,
-                                'tanggal' => $tanggal,
-                                'waktu' => $waktu,
-                                'status' => 1,
-                                'wa_sent' => true,
-                            ];
-
-                            // Kirim WhatsApp HANYA SEKALI
-                            $guru = Guru::where('nip', $nip)->first();
-
-                            if ($guru && $guru->no_wa) {
-                                $nomor = $this->formatNomorWhatsApp($guru->no_wa);
-                                $hariInggris = date('l', strtotime($tanggal));
-                                $hari = $this->hariIndonesia($hariInggris);
-                                $tanggalPesan = $this->bulanIndonesia($tanggal);
-
-                                $pesan = "Hallo, {$guru->nama}.\n".
-                                        "Kehadiran Anda pada hari {$hari}, {$tanggalPesan} ".
-                                        "pukul {$waktu}.\nTerima kasih.";
-
-                                try {
-                                    sleep(3); // jeda biar aman
-                                    $this->kirimWA($nomor, $pesan);
-                                } catch (\Exception $e) {
-                                    Log::error("WA Error: " . $e->getMessage());
-                                }
-                            }
-
-                        } 
-                        else {
-                            if ($waktu >= '16:00:00') {
-
-                                if ($exists->pulang == null || $waktu > $exists->pulang) {
-                                    $exists->update([
-                                        'pulang' => $waktu
-                                    ]);
-                                }
-
-                            }
-                        }
-                    }
-
-                    $zk->disconnect();
-                } else {
-                    Log::error("Gagal terhubung ke mesin dengan IP: " . $value->ip);
+                if (!$zk->connect()) {
+                    Log::error("Gagal koneksi mesin IP: {$value->ip}");
+                    continue;
                 }
 
-            } catch (\Exception $e) {
-                Log::error("Error koneksi ke mesin {$value->ip}: " . $e->getMessage());
-            }
-        }
+                $logs = $zk->getAttendance();
 
-        // Insert absensi baru
-        if (!empty($create)) {
-            GR::insert($create);
+                foreach ($logs as $log) {
+
+                    $nip      = $log['id'];
+                    $datetime = $log['timestamp'];
+                    $tanggal  = date('Y-m-d', strtotime($datetime));
+                    $waktu    = date('H:i:s', strtotime($datetime));
+
+                    // hanya proses hari ini
+                    if ($tanggal !== $today) {
+                        continue;
+                    }
+
+                    // ambil data kehadiran hari ini
+                    $exists = GR::where('nip', $nip)
+                        ->where('tanggal', $tanggal)
+                        ->first();
+
+                    // tap pertama masuk
+                    if (!$exists) {
+
+                        $absen = GR::create([
+                            'nip'     => $nip,
+                            'tanggal' => $tanggal,
+                            'waktu'   => $waktu,
+                            'status'  => 1,
+                            'wa_sent' => false,
+                        ]);
+
+                        // kirim WA masuk
+                        $guru = Guru::where('nip', $nip)->first();
+
+                        if ($guru && $guru->no_wa) {
+
+                            $nomor = $this->formatNomorWhatsApp($guru->no_wa);
+                            $hari  = $this->hariIndonesia(date('l', strtotime($tanggal)));
+                            $tgl   = $this->bulanIndonesia($tanggal);
+
+                            $pesan = "Hallo, {$guru->nama}.\n" .
+                                    "Kehadiran Anda pada hari {$hari}, {$tgl} " .
+                                    "pukul {$waktu}.\nTerima kasih.";
+
+                            try {
+                                $this->kirimWA($nomor, $pesan);
+                                $absen->update(['wa_sent' => true]);
+                            } catch (\Exception $e) {
+                                Log::error("WA Error: " . $e->getMessage());
+                            }
+                        }
+
+                    }
+
+                    // tap selanjutnya pulang
+
+                    else {
+                        // simpan TAP TERAKHIR sebagai jam pulang
+                        if ($exists->pulang === null || $waktu > $exists->pulang) {
+                            $exists->update([
+                                'pulang' => $waktu
+                            ]);
+                        }
+                    }
+                }
+
+                $zk->disconnect();
+
+            } catch (\Exception $e) {
+                Log::error("Error mesin {$value->ip}: " . $e->getMessage());
+            }
         }
 
         return true;

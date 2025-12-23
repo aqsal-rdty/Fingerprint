@@ -87,17 +87,44 @@ class GuruController extends Controller
     public function rekapSemua(Request $request)
     {
         $from = $request->from;
-        $to = $request->to;
+        $to   = $request->to;
 
         $qw_hadir = collect();
 
         if ($from && $to) {
             $qw_hadir = DB::table('kehadiranguru')
                 ->join('guru', 'guru.nip', '=', 'kehadiranguru.nip')
-                ->leftJoin('seting_keterlambatan', 'seting_keterlambatan.nip', '=', 'guru.nip')
-                ->select('guru.nama', 'kehadiranguru.tanggal', 'kehadiranguru.waktu', 'seting_keterlambatan.jam_terlambat', 'seting_keterlambatan.jam_pulang')
+                ->leftJoin(
+                    'seting_keterlambatan',
+                    'seting_keterlambatan.nip',
+                    '=',
+                    'guru.nip'
+                )
+                ->select(
+                    'guru.nama',
+                    'kehadiranguru.tanggal',
+
+                    DB::raw('MIN(kehadiranguru.waktu) as jam_masuk'),
+                    DB::raw("
+                        CASE 
+                            WHEN COUNT(kehadiranguru.waktu) > 1
+                            THEN MAX(kehadiranguru.waktu)
+                            ELSE '-'
+                        END as jam_pulang
+                    "),
+
+                    DB::raw("IFNULL(seting_keterlambatan.jam_terlambat, '07:01:00') as jam_terlambat"),
+                    DB::raw("IFNULL(seting_keterlambatan.jam_pulang, '16:00:00') as batas_pulang")
+                )
                 ->whereBetween('kehadiranguru.tanggal', [$from, $to])
+                ->groupBy(
+                    'guru.nama',
+                    'kehadiranguru.tanggal',
+                    'seting_keterlambatan.jam_terlambat',
+                    'seting_keterlambatan.jam_pulang'
+                )
                 ->orderBy('kehadiranguru.tanggal', 'desc')
+                ->orderBy('guru.nama', 'asc')
                 ->get();
         }
 
@@ -212,14 +239,45 @@ class GuruController extends Controller
         $from = $request->from ?? date('Y-m-d');
         $to   = $request->to   ?? date('Y-m-d');
 
-        $query = DB::table('kehadiranguru')
+        $qw_hadir = DB::table('kehadiranguru')
             ->join('guru', 'guru.nip', '=', 'kehadiranguru.nip')
-            ->leftJoin('seting_keterlambatan', 'seting_keterlambatan.nip', '=', 'guru.nip')
-            ->select('guru.nama', 'kehadiranguru.waktu', 'kehadiranguru.tanggal', 'seting_keterlambatan.jam_terlambat', 'seting_keterlambatan.jam_pulang')
-            ->orderBy('kehadiranguru.tanggal', 'asc')
-            ->whereBetween('kehadiranguru.tanggal', [$from, $to]);
 
-        $qw_hadir = $query->get();
+            ->leftJoin(
+                'seting_keterlambatan',
+                'seting_keterlambatan.nip',
+                '=',
+                'guru.nip'
+            )
+
+            ->select(
+                'guru.nama',
+                'kehadiranguru.tanggal',
+
+                DB::raw('MIN(kehadiranguru.waktu) as jam_masuk'),
+                DB::raw("
+                    CASE 
+                        WHEN COUNT(kehadiranguru.waktu) > 1 
+                        THEN MAX(kehadiranguru.waktu) 
+                        ELSE '-' 
+                    END as jam_pulang
+                "),
+
+                DB::raw("IFNULL(seting_keterlambatan.jam_terlambat, '07:01:00') as jam_terlambat"),
+                DB::raw("IFNULL(seting_keterlambatan.jam_pulang, '16:00:00') as batas_pulang")
+            )
+
+            ->whereBetween('kehadiranguru.tanggal', [$from, $to])
+
+            ->groupBy(
+                'guru.nama',
+                'kehadiranguru.tanggal',
+                'seting_keterlambatan.jam_terlambat',
+                'seting_keterlambatan.jam_pulang'
+            )
+
+            ->orderBy('kehadiranguru.tanggal', 'asc')
+            ->orderBy('guru.nama', 'asc')
+            ->get();
 
         return view('kehadiran.hadir', compact('from', 'to', 'qw_hadir'));
     }
