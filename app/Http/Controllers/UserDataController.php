@@ -18,7 +18,7 @@ class UserDataController extends Controller
     }
 
    public function sinkronguru()
-    {
+   {
         // biar proses lama tidak timeout
         ini_set('max_execution_time', 0);
 
@@ -115,6 +115,7 @@ class UserDataController extends Controller
 
         return true;
     }
+
 
     public function indexguru()
     {

@@ -320,16 +320,32 @@ class GuruController extends Controller
         $nip = Auth::user()->nip;
 
         $qw_hadir = DB::table('kehadiranguru')
-            ->join('guru', 'kehadiranguru.nip', '=', 'guru.nip')
-            ->leftJoin('seting_keterlambatan', 'seting_keterlambatan.nip', '=', 'guru.nip')
-            ->select('kehadiranguru.*', 'guru.nama', 'seting_keterlambatan.jam_terlambat', 'seting_keterlambatan.jam_pulang')
+            ->leftJoin('seting_keterlambatan', 'seting_keterlambatan.nip', '=', 'kehadiranguru.nip')
+            ->select(
+                'kehadiranguru.tanggal',
+
+                DB::raw('MIN(kehadiranguru.waktu) as jam_datang'),
+                DB::raw("
+                    CASE 
+                        WHEN COUNT(kehadiranguru.waktu) > 1 
+                        THEN MAX(kehadiranguru.waktu) 
+                        ELSE '-' 
+                    END as jam_pulang
+                "),
+
+                DB::raw("IFNULL(seting_keterlambatan.jam_terlambat, '07:01:00') as jam_terlambat"),
+                DB::raw("IFNULL(seting_keterlambatan.jam_pulang, '16:00:00') as batas_pulang")
+            )
             ->where('kehadiranguru.nip', $nip)
+            ->groupBy(
+                'kehadiranguru.tanggal',
+                'seting_keterlambatan.jam_terlambat',
+                'seting_keterlambatan.jam_pulang'
+            )
             ->orderBy('kehadiranguru.tanggal', 'desc')
             ->get();
 
-        return view('guru.rekap', [
-            'qw_hadir' => $qw_hadir
-        ]);
+        return view('guru.rekap', compact('qw_hadir'));
     }
 
 }

@@ -43,7 +43,15 @@
                                 <td>{{ $no + 1 }}</td>
                                 <td class="text-start">{{ $row->nama }}</td>
                                 <td>{{ $row->tanggal }}</td>
-                                <td>{{ $row->jam_masuk }}</td>
+                                <td>
+                                    {{ $row->jam_masuk }}
+
+                                    @if($row->jam_masuk <= $row->jam_terlambat)
+                                        <span class="badge bg-success ms-1">Tepat</span>
+                                    @else
+                                        <span class="badge bg-danger ms-1">Telat</span>
+                                    @endif
+                                </td>
                                 <td>{{ $row->jam_pulang }}</td>
                             </tr>
                         @endforeach
